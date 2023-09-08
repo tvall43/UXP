@@ -46,7 +46,7 @@ private:
     status_t mInitCheck;
     bool mIsWide;
 
-    off64_t mOffsetTable[OFFSET_TABLE_LEN]; //5 min
+    off_t mOffsetTable[OFFSET_TABLE_LEN]; //5 min
     size_t mOffsetTableLength;
 
     AMRExtractor(const AMRExtractor &);

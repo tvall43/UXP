@@ -182,7 +182,7 @@ bool SampleTable::isValid() const {
 }
 
 status_t SampleTable::setChunkOffsetParams(
-        uint32_t type, off64_t data_offset, size_t data_size) {
+        uint32_t type, off_t data_offset, size_t data_size) {
     if (mChunkOffsetOffset >= 0) {
         return ERROR_MALFORMED;
     }
@@ -223,7 +223,7 @@ status_t SampleTable::setChunkOffsetParams(
 }
 
 status_t SampleTable::setSampleToChunkParams(
-        off64_t data_offset, size_t data_size) {
+        off_t data_offset, size_t data_size) {
     if (mSampleToChunkOffset >= 0) {
         return ERROR_MALFORMED;
     }
@@ -280,7 +280,7 @@ status_t SampleTable::setSampleToChunkParams(
 }
 
 status_t SampleTable::setSampleSizeParams(
-        uint32_t type, off64_t data_offset, size_t data_size) {
+        uint32_t type, off_t data_offset, size_t data_size) {
     if (mSampleSizeOffset >= 0) {
         return ERROR_MALFORMED;
     }
@@ -340,7 +340,7 @@ status_t SampleTable::setSampleSizeParams(
 }
 
 status_t SampleTable::setTimeToSampleParams(
-        off64_t data_offset, size_t data_size) {
+        off_t data_offset, size_t data_size) {
     if (mTimeToSample != NULL || data_size < 8) {
         return ERROR_MALFORMED;
     }
@@ -387,7 +387,7 @@ status_t SampleTable::setTimeToSampleParams(
 // regardless of version.
 // We do the same with ctts flags to work around encoder software issues.
 status_t SampleTable::setCompositionTimeToSampleParams(
-        off64_t data_offset, size_t data_size) {
+        off_t data_offset, size_t data_size) {
     ALOGV("There are reordered frames present.");
 
     if (mCompositionTimeDeltaEntries != NULL || data_size < 8) {
@@ -441,7 +441,7 @@ status_t SampleTable::setCompositionTimeToSampleParams(
     return OK;
 }
 
-status_t SampleTable::setSyncSampleParams(off64_t data_offset, size_t data_size) {
+status_t SampleTable::setSyncSampleParams(off_t data_offset, size_t data_size) {
     if (mSyncSampleOffset >= 0 || data_size < 8) {
         return ERROR_MALFORMED;
     }
@@ -488,7 +488,7 @@ status_t SampleTable::setSyncSampleParams(off64_t data_offset, size_t data_size)
 
 static status_t
 validateCencBoxHeader(
-        sp<DataSource>& data_source, off64_t& data_offset,
+        sp<DataSource>& data_source, off_t& data_offset,
         uint8_t* out_version, uint32_t* out_aux_type) {
     *out_aux_type = 0;
 
@@ -521,8 +521,8 @@ validateCencBoxHeader(
 
 status_t
 SampleTable::setSampleAuxiliaryInformationSizeParams(
-        off64_t data_offset, size_t data_size, uint32_t drm_scheme) {
-    off64_t data_end = data_offset + data_size;
+        off_t data_offset, size_t data_size, uint32_t drm_scheme) {
+    off_t data_end = data_offset + data_size;
 
     uint8_t version;
     uint32_t aux_type;
@@ -582,8 +582,8 @@ SampleTable::setSampleAuxiliaryInformationSizeParams(
 
 status_t
 SampleTable::setSampleAuxiliaryInformationOffsetParams(
-        off64_t data_offset, size_t data_size, uint32_t drm_scheme) {
-    off64_t data_end = data_offset + data_size;
+        off_t data_offset, size_t data_size, uint32_t drm_scheme) {
+    off_t data_end = data_offset + data_size;
 
     uint8_t version;
     uint32_t aux_type;
@@ -1103,7 +1103,7 @@ status_t SampleTable::getSampleSize_l(
 
 status_t SampleTable::getMetaDataForSample(
         uint32_t sampleIndex,
-        off64_t *offset,
+        off_t *offset,
         size_t *size,
         uint32_t *compositionTime,
         uint32_t *duration,

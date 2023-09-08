@@ -98,8 +98,8 @@ private:
     String8 mLastCommentData;
 
     status_t readMetaData();
-    status_t parseChunk(off64_t *offset, int depth);
-    status_t parseMetaData(off64_t offset, size_t size);
+    status_t parseChunk(off_t *offset, int depth);
+    status_t parseMetaData(off_t offset, size_t size);
 
     status_t updateAudioTrackInfoFromESDS_MPEG4Audio(
             const void *esds_data, size_t esds_size);
@@ -119,11 +119,11 @@ private:
     bool mIsDrm;
     uint32_t mDrmScheme;
 
-    status_t parseDrmSINF(off64_t *offset, off64_t data_offset);
+    status_t parseDrmSINF(off_t *offset, off_t data_offset);
 
-    status_t parseTrackHeader(off64_t data_offset, off64_t data_size);
+    status_t parseTrackHeader(off_t data_offset, off_t data_size);
 
-    status_t parseSegmentIndex(off64_t data_offset, size_t data_size);
+    status_t parseSegmentIndex(off_t data_offset, size_t data_size);
 
     void storeEditList();
 

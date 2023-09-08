@@ -38,26 +38,26 @@ public:
 
     // type can be 'stco' or 'co64'.
     status_t setChunkOffsetParams(
-            uint32_t type, off64_t data_offset, size_t data_size);
+            uint32_t type, off_t data_offset, size_t data_size);
 
-    status_t setSampleToChunkParams(off64_t data_offset, size_t data_size);
+    status_t setSampleToChunkParams(off_t data_offset, size_t data_size);
 
     // type can be 'stsz' or 'stz2'.
     status_t setSampleSizeParams(
-            uint32_t type, off64_t data_offset, size_t data_size);
+            uint32_t type, off_t data_offset, size_t data_size);
 
-    status_t setTimeToSampleParams(off64_t data_offset, size_t data_size);
+    status_t setTimeToSampleParams(off_t data_offset, size_t data_size);
 
     status_t setCompositionTimeToSampleParams(
-            off64_t data_offset, size_t data_size);
+            off_t data_offset, size_t data_size);
 
-    status_t setSyncSampleParams(off64_t data_offset, size_t data_size);
+    status_t setSyncSampleParams(off_t data_offset, size_t data_size);
 
-    status_t setSampleAuxiliaryInformationSizeParams(off64_t aDataOffset,
+    status_t setSampleAuxiliaryInformationSizeParams(off_t aDataOffset,
                                                      size_t aDataSize,
                                                      uint32_t aDrmScheme);
 
-    status_t setSampleAuxiliaryInformationOffsetParams(off64_t aDataOffset,
+    status_t setSampleAuxiliaryInformationOffsetParams(off_t aDataOffset,
                                                        size_t aDataSize,
                                                        uint32_t aDrmScheme);
 
@@ -71,7 +71,7 @@ public:
 
     status_t getMetaDataForSample(
             uint32_t sampleIndex,
-            off64_t *offset,
+            off_t *offset,
             size_t *size,
             uint32_t *compositionTime,
             uint32_t *duration = NULL,
@@ -113,14 +113,14 @@ private:
     sp<DataSource> mDataSource;
     Mutex mLock;
 
-    off64_t mChunkOffsetOffset;
+    off_t mChunkOffsetOffset;
     uint32_t mChunkOffsetType;
     uint32_t mNumChunkOffsets;
 
-    off64_t mSampleToChunkOffset;
+    off_t mSampleToChunkOffset;
     uint32_t mNumSampleToChunkOffsets;
 
-    off64_t mSampleSizeOffset;
+    off_t mSampleSizeOffset;
     uint32_t mSampleSizeFieldSize;
     uint32_t mDefaultSampleSize;
     uint32_t mNumSampleSizes;
@@ -138,7 +138,7 @@ private:
     size_t mNumCompositionTimeDeltaEntries;
     CompositionDeltaLookup *mCompositionDeltaLookup;
 
-    off64_t mSyncSampleOffset;
+    off_t mSyncSampleOffset;
     uint32_t mNumSyncSamples;
     uint32_t *mSyncSamples;
     size_t mLastSyncSampleIndex;

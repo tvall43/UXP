@@ -12,7 +12,7 @@ if CONFIG['OS_TARGET'] != 'WINNT' and CONFIG['OS_TARGET'] != 'SunOS':
 if CONFIG['OS_TARGET'] == 'WINNT':
     if CONFIG['_MSC_VER']:
         DEFINES['ssize_t'] = 'intptr_t'
-        DEFINES['off64_t'] = 'int64_t'
+        DEFINES['off_t'] = 'int64_t'
         DEFINES['strcasecmp'] = 'stricmp'
         DEFINES['strncasecmp'] = 'strnicmp'
     DEFINES['HAVE_MS_C_RUNTIME'] = True
@@ -20,7 +20,7 @@ if CONFIG['OS_TARGET'] == 'WINNT':
     LOCAL_INCLUDES += [ 'ports/win32/include' ]
 elif CONFIG['OS_TARGET'] == 'Darwin':
     DEFINES['HAVE_SYS_UIO_H'] = True
-    DEFINES['off64_t'] = 'off_t'
+    DEFINES['off_t'] = 'off_t'
     LOCAL_INCLUDES += [ 'ports/darwin/include' ]
 elif CONFIG['OS_TARGET'] in ('DragonFly', 'FreeBSD', 'OpenBSD', 'NetBSD',
         'GNU/kFreeBSD'):
@@ -30,7 +30,7 @@ elif CONFIG['OS_TARGET'] in ('DragonFly', 'FreeBSD', 'OpenBSD', 'NetBSD',
         DEFINES['EBADMSG'] = '-0x80000006'
     DEFINES['HAVE_SYS_UIO_H'] = True
     if CONFIG['OS_TARGET'] != 'GNU/kFreeBSD':
-        DEFINES['off64_t'] = 'off_t'
+        DEFINES['off_t'] = 'off_t'
         LOCAL_INCLUDES += [ 'ports/bsd/include' ]
 else:
     DEFINES['HAVE_SYS_UIO_H'] = True

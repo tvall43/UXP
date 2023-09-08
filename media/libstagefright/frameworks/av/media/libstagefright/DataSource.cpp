@@ -27,7 +27,7 @@
 
 namespace stagefright {
 
-bool DataSource::getUInt16(off64_t offset, uint16_t *x) {
+bool DataSource::getUInt16(off_t offset, uint16_t *x) {
     *x = 0;
 
     uint8_t byte[2];
@@ -40,7 +40,7 @@ bool DataSource::getUInt16(off64_t offset, uint16_t *x) {
     return true;
 }
 
-bool DataSource::getUInt24(off64_t offset, uint32_t *x) {
+bool DataSource::getUInt24(off_t offset, uint32_t *x) {
     *x = 0;
 
     uint8_t byte[3];
@@ -53,7 +53,7 @@ bool DataSource::getUInt24(off64_t offset, uint32_t *x) {
     return true;
 }
 
-bool DataSource::getUInt32(off64_t offset, uint32_t *x) {
+bool DataSource::getUInt32(off_t offset, uint32_t *x) {
     *x = 0;
 
     uint32_t tmp;
@@ -66,7 +66,7 @@ bool DataSource::getUInt32(off64_t offset, uint32_t *x) {
     return true;
 }
 
-bool DataSource::getUInt64(off64_t offset, uint64_t *x) {
+bool DataSource::getUInt64(off_t offset, uint64_t *x) {
     *x = 0;
 
     uint64_t tmp;
@@ -79,7 +79,7 @@ bool DataSource::getUInt64(off64_t offset, uint64_t *x) {
     return true;
 }
 
-status_t DataSource::getSize(off64_t *size) {
+status_t DataSource::getSize(off_t *size) {
     *size = 0;
 
     return ERROR_UNSUPPORTED;

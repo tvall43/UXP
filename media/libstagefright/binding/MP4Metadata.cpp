@@ -37,7 +37,7 @@ public:
 
   virtual status_t initCheck() const { return NO_ERROR; }
 
-  virtual ssize_t readAt(off64_t offset, void* data, size_t size)
+  virtual ssize_t readAt(off_t offset, void* data, size_t size)
   {
     MOZ_ASSERT(((ssize_t)size) >= 0);
     size_t bytesRead;
@@ -51,7 +51,7 @@ public:
     return bytesRead;
   }
 
-  virtual status_t getSize(off64_t* size)
+  virtual status_t getSize(off_t* size)
   {
     if (!mSource->Length(size))
       return ERROR_UNSUPPORTED;
@@ -60,7 +60,7 @@ public:
 
   virtual uint32_t flags() { return kWantsPrefetching | kIsHTTPBasedSource; }
 
-  virtual status_t reconnectAtOffset(off64_t offset) { return NO_ERROR; }
+  virtual status_t reconnectAtOffset(off_t offset) { return NO_ERROR; }
 
 private:
   RefPtr<Stream> mSource;

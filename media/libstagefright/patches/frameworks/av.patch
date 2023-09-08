@@ -525,9 +525,9 @@ index fc6fd9c..c65a69e 100644
 -namespace android {
 +namespace stagefright {
  
- bool DataSource::getUInt16(off64_t offset, uint16_t *x) {
+ bool DataSource::getUInt16(off_t offset, uint16_t *x) {
      *x = 0;
-@@ -105,6 +87,8 @@ status_t DataSource::getSize(off64_t *size) {
+@@ -105,6 +87,8 @@ status_t DataSource::getSize(off_t *size) {
  
  ////////////////////////////////////////////////////////////////////////////////
  
@@ -610,15 +610,15 @@ index ad985ee..71a0613 100644
      char tmp[32];
      strftime(tmp, sizeof(tmp), "%Y%m%dT%H%M%S.000Z", gmtime(&time_1970));
  
-@@ -1248,6 +1254,7 @@ status_t MPEG4Extractor::parseChunk(off64_t *offset, int depth) {
+@@ -1248,6 +1254,7 @@ status_t MPEG4Extractor::parseChunk(off_t *offset, int depth) {
              ALOGV("*** coding='%s' %d channels, size %d, rate %d\n",
                     chunk, num_channels, sample_size, sample_rate);
              mLastTrack->meta->setInt32(kKeyChannelCount, num_channels);
 +            mLastTrack->meta->setInt32(kKeySampleSize, sample_size);
              mLastTrack->meta->setInt32(kKeySampleRate, sample_rate);
  
-             off64_t stop_offset = *offset + chunk_size;
-@@ -1652,8 +1659,9 @@ status_t MPEG4Extractor::parseChunk(off64_t *offset, int depth) {
+             off_t stop_offset = *offset + chunk_size;
+@@ -1652,8 +1659,9 @@ status_t MPEG4Extractor::parseChunk(off_t *offset, int depth) {
  
              String8 s;
              convertTimeToDate(creationTime, &s);
@@ -660,7 +660,7 @@ index ad985ee..71a0613 100644
 @@ -3360,6 +3374,18 @@ status_t MPEG4Source::fragmentedRead(
              // move to next fragment
              Sample lastSample = mCurrentSamples[mCurrentSamples.size() - 1];
-             off64_t nextMoof = mNextMoofOffset; // lastSample.offset + lastSample.size;
+             off_t nextMoof = mNextMoofOffset; // lastSample.offset + lastSample.size;
 +
 +            // If we're pointing to a sidx box then we skip it.
 +            uint32_t hdr[2];

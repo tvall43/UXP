@@ -106,11 +106,11 @@ struct MPEG4DataSource : public DataSource {
     MPEG4DataSource(const sp<DataSource> &source);
 
     status_t initCheck() const override;
-    ssize_t readAt(off64_t offset, void *data, size_t size) override;
-    status_t getSize(off64_t *size) override;
+    ssize_t readAt(off_t offset, void *data, size_t size) override;
+    status_t getSize(off_t *size) override;
     uint32_t flags() override;
 
-    status_t setCachedRange(off64_t offset, size_t size);
+    status_t setCachedRange(off_t offset, size_t size);
 
 protected:
     virtual ~MPEG4DataSource();
@@ -119,7 +119,7 @@ private:
     Mutex mLock;
 
     sp<DataSource> mSource;
-    off64_t mCachedOffset;
+    off_t mCachedOffset;
     size_t mCachedSize;
     uint8_t *mCache;
 
@@ -154,7 +154,7 @@ status_t MPEG4DataSource::initCheck() const {
     return mSource->initCheck();
 }
 
-ssize_t MPEG4DataSource::readAt(off64_t offset, void *data, size_t size) {
+ssize_t MPEG4DataSource::readAt(off_t offset, void *data, size_t size) {
     Mutex::Autolock autoLock(mLock);
 
     if (offset >= mCachedOffset
@@ -166,7 +166,7 @@ ssize_t MPEG4DataSource::readAt(off64_t offset, void *data, size_t size) {
     return mSource->readAt(offset, data, size);
 }
 
-status_t MPEG4DataSource::getSize(off64_t *size) {
+status_t MPEG4DataSource::getSize(off_t *size) {
     return mSource->getSize(size);
 }
 
@@ -174,7 +174,7 @@ uint32_t MPEG4DataSource::flags() {
     return mSource->flags();
 }
 
-status_t MPEG4DataSource::setCachedRange(off64_t offset, size_t size) {
+status_t MPEG4DataSource::setCachedRange(off_t offset, size_t size) {
     Mutex::Autolock autoLock(mLock);
 
     clearCache();
@@ -408,7 +408,7 @@ status_t MPEG4Extractor::readMetaData() {
         return mInitCheck;
     }
 
-    off64_t offset = 0;
+    off_t offset = 0;
     status_t err = NO_INIT;
     while (!mFirstTrack) {
         err = parseChunk(&offset, 0);
@@ -482,7 +482,7 @@ char* MPEG4Extractor::getDrmTrackInfo(size_t trackID, int *len) {
 }
 
 // Reads an encoded integer 7 bits at a time until it encounters the high bit clear.
-static int32_t readSize(off64_t offset,
+static int32_t readSize(off_t offset,
         const sp<DataSource> DataSource, uint8_t *numOfBytes) {
     uint32_t size = 0;
     uint8_t data;
@@ -502,7 +502,7 @@ static int32_t readSize(off64_t offset,
     return size;
 }
 
-status_t MPEG4Extractor::parseDrmSINF(off64_t *offset, off64_t data_offset) {
+status_t MPEG4Extractor::parseDrmSINF(off_t *offset, off_t data_offset) {
     uint8_t updateIdTag;
     if (mDataSource->readAt(data_offset, &updateIdTag, 1) < 1) {
         return ERROR_IO;
@@ -666,7 +666,7 @@ static bool ValidInputSize(int32_t size) {
   return (size > 0 && size <= 4 * (1920 * 1080) * 3 / 2);
 }
 
-status_t MPEG4Extractor::parseChunk(off64_t *offset, int depth) {
+status_t MPEG4Extractor::parseChunk(off_t *offset, int depth) {
     ALOGV("entering parseChunk %lld/%d", *offset, depth);
     uint32_t hdr[2];
     if (mDataSource->readAt(*offset, hdr, 4) < 4) {
@@ -681,7 +681,7 @@ status_t MPEG4Extractor::parseChunk(off64_t *offset, int depth) {
     }
     uint64_t chunk_size = ntohl(hdr[0]);
     uint32_t chunk_type = ntohl(hdr[1]);
-    off64_t data_offset = *offset + 8;
+    off_t data_offset = *offset + 8;
 
     if (chunk_size == 1) {
         if (mDataSource->readAt(*offset + 8, &chunk_size, 8) < 8) {
@@ -728,12 +728,12 @@ status_t MPEG4Extractor::parseChunk(off64_t *offset, int depth) {
 
     PathAdder autoAdder(&mPath, chunk_type);
 
-    off64_t chunk_data_size = *offset + chunk_size - data_offset;
+    off_t chunk_data_size = *offset + chunk_size - data_offset;
 
     if (chunk_type != FOURCC('c', 'p', 'r', 't')
             && chunk_type != FOURCC('c', 'o', 'v', 'r')
             && mPath.Length() == 5 && underMetaDataPath(mPath)) {
-        off64_t stop_offset = *offset + chunk_size;
+        off_t stop_offset = *offset + chunk_size;
         *offset = data_offset;
         while (*offset < stop_offset) {
             status_t err = parseChunk(offset, depth + 1);
@@ -808,7 +808,7 @@ status_t MPEG4Extractor::parseChunk(off64_t *offset, int depth) {
                 track->meta->setCString(kKeyMIMEType, "application/octet-stream");
             }
 
-            off64_t stop_offset = *offset + chunk_size;
+            off_t stop_offset = *offset + chunk_size;
             *offset = data_offset;
             while (*offset < stop_offset) {
                 status_t err = parseChunk(offset, depth + 1);
@@ -870,7 +870,7 @@ status_t MPEG4Extractor::parseChunk(off64_t *offset, int depth) {
                 return ERROR_IO;
             }
 
-            off64_t entriesoffset = data_offset + 8;
+            off_t entriesoffset = data_offset + 8;
             bool nonEmptyCount = false;
             for (uint32_t i = 0; i < entry_count; i++) {
                 if (mHeaderTimescale == 0) {
@@ -1078,7 +1078,7 @@ status_t MPEG4Extractor::parseChunk(off64_t *offset, int depth) {
                 return ERROR_IO;
             }
 
-            off64_t timescale_offset;
+            off_t timescale_offset;
 
             if (version == 1) {
                 timescale_offset = data_offset + 4 + 16;
@@ -1144,7 +1144,7 @@ status_t MPEG4Extractor::parseChunk(off64_t *offset, int depth) {
             mLastTrack->meta->setInt64(kKeyDuration, duration_us);
 
             uint8_t lang[2];
-            off64_t lang_offset;
+            off_t lang_offset;
             if (version == 1) {
                 lang_offset = timescale_offset + 4 + 8;
             } else if (version == 0) {
@@ -1181,7 +1181,7 @@ status_t MPEG4Extractor::parseChunk(off64_t *offset, int depth) {
             }
 
             uint8_t buffer[8];
-            if (chunk_data_size < (off64_t)sizeof(buffer)) {
+            if (chunk_data_size < (off_t)sizeof(buffer)) {
                 return ERROR_MALFORMED;
             }
 
@@ -1215,7 +1215,7 @@ status_t MPEG4Extractor::parseChunk(off64_t *offset, int depth) {
                     break;
                 }
             }
-            off64_t stop_offset = *offset + chunk_size;
+            off_t stop_offset = *offset + chunk_size;
             *offset = data_offset + 8;
             for (uint32_t i = 0; i < entry_count; ++i) {
                 status_t err = parseChunk(offset, depth + 1);
@@ -1330,7 +1330,7 @@ status_t MPEG4Extractor::parseChunk(off64_t *offset, int depth) {
             mLastTrack->meta->setInt32(kKeySampleSize, sample_size);
             mLastTrack->meta->setInt32(kKeySampleRate, sample_rate);
 
-            off64_t stop_offset = *offset + chunk_size;
+            off_t stop_offset = *offset + chunk_size;
             *offset = data_offset + sizeof(buffer) + skip;
             while (*offset < stop_offset) {
                 status_t err = parseChunk(offset, depth + 1);
@@ -1397,7 +1397,7 @@ status_t MPEG4Extractor::parseChunk(off64_t *offset, int depth) {
             mLastTrack->meta->setInt32(kKeyWidth, width);
             mLastTrack->meta->setInt32(kKeyHeight, height);
 
-            off64_t stop_offset = *offset + chunk_size;
+            off_t stop_offset = *offset + chunk_size;
             *offset = data_offset + sizeof(buffer);
             while (*offset < stop_offset) {
                 status_t err = parseChunk(offset, depth + 1);
@@ -1614,8 +1614,8 @@ status_t MPEG4Extractor::parseChunk(off64_t *offset, int depth) {
 
             // Substracting 5 from the data size is because the text string length +
             // language code takes 4 bytes, and the trailing slash "/" takes 1 byte.
-            off64_t location_length = chunk_data_size - 5;
-            if (location_length >= (off64_t) sizeof(buffer)) {
+            off_t location_length = chunk_data_size - 5;
+            if (location_length >= (off_t) sizeof(buffer)) {
                 return ERROR_MALFORMED;
             }
 
@@ -1637,7 +1637,7 @@ status_t MPEG4Extractor::parseChunk(off64_t *offset, int depth) {
             }
 
             uint8_t buffer[256];
-            if (chunk_data_size > (off64_t)sizeof(buffer)) {
+            if (chunk_data_size > (off_t)sizeof(buffer)) {
                 return ERROR_BUFFER_TOO_SMALL;
             }
 
@@ -1741,7 +1741,7 @@ status_t MPEG4Extractor::parseChunk(off64_t *offset, int depth) {
         case FOURCC('m', 'e', 't', 'a'):
         {
             uint8_t buffer[4];
-            if (chunk_data_size < (off64_t)sizeof(buffer)) {
+            if (chunk_data_size < (off_t)sizeof(buffer)) {
                 return ERROR_MALFORMED;
             }
 
@@ -1761,7 +1761,7 @@ status_t MPEG4Extractor::parseChunk(off64_t *offset, int depth) {
                 return OK;
             }
 
-            off64_t stop_offset = *offset + chunk_size;
+            off_t stop_offset = *offset + chunk_size;
             *offset = data_offset + sizeof(buffer);
             while (*offset < stop_offset) {
                 status_t err = parseChunk(offset, depth + 1);
@@ -1989,7 +1989,7 @@ status_t MPEG4Extractor::parseChunk(off64_t *offset, int depth) {
 
         case FOURCC('w', 'a', 'v', 'e'):
         {
-            off64_t stop_offset = *offset + chunk_size;
+            off_t stop_offset = *offset + chunk_size;
             *offset = data_offset;
             while (*offset < stop_offset) {
                 status_t err = parseChunk(offset, depth + 1);
@@ -2054,7 +2054,7 @@ void MPEG4Extractor::storeEditList()
   }
 }
 
-status_t MPEG4Extractor::parseSegmentIndex(off64_t offset, size_t size) {
+status_t MPEG4Extractor::parseSegmentIndex(off_t offset, size_t size) {
   ALOGV("MPEG4Extractor::parseSegmentIndex");
 
     if (size < 12) {
@@ -2185,7 +2185,7 @@ status_t MPEG4Extractor::parseSegmentIndex(off64_t offset, size_t size) {
 }
 
 status_t MPEG4Extractor::parseTrackHeader(
-        off64_t data_offset, off64_t data_size) {
+        off_t data_offset, off_t data_size) {
     if (data_size < 4) {
         return ERROR_MALFORMED;
     }
@@ -2199,7 +2199,7 @@ status_t MPEG4Extractor::parseTrackHeader(
 
     uint8_t buffer[36 + 60];
 
-    if (data_size != (off64_t)dynSize + 60) {
+    if (data_size != (off_t)dynSize + 60) {
         return ERROR_MALFORMED;
     }
 
@@ -2276,7 +2276,7 @@ status_t MPEG4Extractor::parseTrackHeader(
     return OK;
 }
 
-status_t MPEG4Extractor::parseMetaData(off64_t offset, size_t size) {
+status_t MPEG4Extractor::parseMetaData(off_t offset, size_t size) {
     if (size < 4) {
         return ERROR_MALFORMED;
     }
@@ -2929,7 +2929,7 @@ nsTArray<MediaSource::Indice> MPEG4Source::exportIndex()
   }
   for (uint32_t sampleIndex = 0; sampleIndex < mSampleTable->countSamples();
           sampleIndex++) {
-      off64_t offset;
+      off_t offset;
       size_t size;
       uint32_t compositionTime;
       uint32_t duration;
